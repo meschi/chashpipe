@@ -1,3 +1,7 @@
+#include <sys/stat.h>
+
+#include <openssl/sha.h>
+
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +16,7 @@
 #define ENC_BASE64	2
 #define ENC_BASE58	3
 
-#define BLOCKSIZE 100;
+#define GROWFAC 2
 
 #define MAXIMUM(a, b)	(((a) > (b)) ? (a) : (b))
 
@@ -30,13 +34,14 @@ void usage(int);
 int
 main(int argc, char **argv)
 {
-	int ch;
-
+	int ch, i;
 	int rfd, wfd;
 	int nread, nwrit;
 	struct stat sbuf;
-	char *buf, *rbuf;
-	int base_size, current_size, off = 0;
+	char *buf, *nbuf; /* buffer for stdin; buffer for realloc() */
+	int blksize, bufsize, off = 0;
+	unsigned char *digest;
+	char fdigest[SHA_DIGEST_LENGTH * 2 + 1];
 
 	while ((ch = getopt(argc, argv, "e:f:hm")) != -1) {
 		switch (ch) {
@@ -84,24 +89,35 @@ main(int argc, char **argv)
 	wfd = fileno(stdout);
 
 	if (fstat(wfd, &sbuf))
-		err(1, "fstat stdout");
+		err(1, "stdout");
 
-	current_size = base_size = MAXIMUM(sbuf.st_blksize, BUFSIZ);
+	blksize = MAXIMUM(sbuf.st_blksize, BUFSIZ);
+	bufsize = blksize * 4; /* value may be tweakable */
 
-	if (buf = (char *)malloc(base_size * BLOCKSIZE))
+	if (!(buf = malloc(bufsize)))
 		err(1, "malloc");
 
-	//FIXME DO something clever
-	/* TODO use nread and nwrit */
-	while ((nread = read(rfd, buf + off, base_size - off)) != -1 && nread != 0) {
+	while ((nread = read(rfd, buf + off, blksize)) != -1 && nread != 0) {
 		off += nread;
-		if (off == base_size) {
-			rbuf = (char *)realloc(current_size + base_size);
-			if (rbuf == NULL)
+
+		if (bufsize - off < blksize) {
+			if ((nbuf = realloc(buf, bufsize * GROWFAC)) == NULL)
+				err(1, "increasing buffer");
+
+			buf = nbuf;
+			bufsize *= GROWFAC;
 		}
 	}
 
+	if (nread == -1)
+		err(1, "stdin");
 
+	digest = SHA1(buf, off, NULL);
+
+	for (i = 0; i < SHA_DIGEST_LENGTH; i++)
+		snprintf(&fdigest[i * 2], 3, "%02x", digest[i]);
+
+	printf("%s\n", fdigest);
 	return 0;
 }
 
