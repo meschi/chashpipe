@@ -117,7 +117,12 @@ main(int argc, char **argv)
 	for (i = 0; i < SHA_DIGEST_LENGTH; i++)
 		snprintf(&fdigest[i * 2], 3, "%02x", digest[i]);
 
-	printf("%s\n", fdigest);
+	if (strcmp(argv[0], fdigest)) {
+		errx(1, "Hashes do not match: %s\n", fdigest);
+	}
+
+	/* TODO Output STDIN Buff here */
+	printf("%s", buf);
 	return 0;
 }
 
