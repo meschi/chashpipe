@@ -38,9 +38,10 @@ main(int argc, char **argv)
 	int ch, i;
 	int rfd, wfd;
 	int nread, nwrit;
+	int wsize;
 	struct stat sbuf;
 	char *buf, *nbuf; /* buffer for stdin; buffer for realloc() */
-	int blksize, bufsize, off = 0;
+	int blksize, bufsize, off = 0, woff = 0;
 	unsigned char *digest;
 	char fdigest[SHA_DIGEST_LENGTH * 2 + 1];
 
@@ -107,7 +108,24 @@ main(int argc, char **argv)
 	check_hash(buf, off, argv[0]);
 
 	/* TODO Output STDIN Buff here */
-	printf("%s", buf);
+
+	do {
+		if (off - woff >= blksize)
+			wsize = blksize;
+		else
+			wsize = off - woff;
+
+		if (wsize == 0)
+			break;
+
+		nwrit = write(wfd, buf + woff, wsize);
+		woff += nwrit;
+
+		if (nwrit == -1)
+			err(1, "stdout");
+	} while (1);
+
+//	printf("%s", buf);
 	return 0;
 }
 
