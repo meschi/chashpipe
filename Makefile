@@ -1,5 +1,5 @@
 all:
-	gcc -lssl -lcrypto hashpipe.c -o hashpipe
+	gcc hashpipe.c -lssl -lcrypto -o hashpipe
 
 clean:
 	rm hashpipe

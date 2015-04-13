@@ -5,3 +5,5 @@ License: ISC
 
 There is no compatibility with the original hashpipe written in go (referenced as gohashpipe in the future) and no compatibility with the multihash format. This tool is compatible with the standard unix checksum tools like sha1sum, sha256sum etc.
 No binary supported, only text. This will get fixed soon.
+
+Build dependencies: openssl-dev
