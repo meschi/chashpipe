@@ -72,7 +72,7 @@ main(int argc, char **argv)
 	if (argc == 0) /* No hash supplied */
 		usage(1);
 	else if (strlen(argv[0]) != digest_size() * 2)
-		errx(1, "Hash length does not match hash function %s\n", fname);
+		errx(1, "Hash length does not match hash function %s", fname);
 
 
 
