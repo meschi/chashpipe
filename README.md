@@ -32,6 +32,18 @@ Supported hash functions:
 
 You can specify the hash function with the `-f` flag.
 
+```sh
+% hashpipe -h
+usage: hashpipe [-h] [-f hashfunction] [hash]
+Command Summary:
+	-f    Hash algorithm
+			(sha1, sha256, sha512, whirlpool, ripemd)
+
+	-h    Print this help
+
+Report bugs to: https://github.com/meschi/chashpipe
+```
+
 ## Building
 First assure, that you have the OpenSSL dev libraries installed. The package name for Debian-/Ubuntuish is called `libssl-dev`.
 
