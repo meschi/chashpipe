@@ -238,10 +238,10 @@ help(void)
 	usage(0);
 	fprintf(stderr,
 	    "Command Summary:\n\
-	    \t-f        Hash algorithm (sha1, sha256, sha512, (md5,) \
-	    whirlpool, ripemd)\n\
-	    \t-h        Print this help\n\
-	    ");
+\t-f    Hash algorithm\n\
+\t\t\t(sha1, sha256, sha512, whirlpool, ripemd)\n\n\
+\t-h    Print this help\n\n\
+Report bugs to: https://github.com/meschi/chashpipe\n");
 	exit(1);
 }
 
