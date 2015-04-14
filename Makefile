@@ -1,8 +1,8 @@
 all:
-	gcc hashpipe.c -lssl -lcrypto -o hashpipe
+	gcc hashpipe.c -lssl -lcrypto -o bin/hashpipe
 
 clean:
-	rm hashpipe
+	rm bin/hashpipe
 
 install:
-	cp hashpipe /usr/bin/hashpipe
+	cp bin/hashpipe /usr/bin/hashpipe
