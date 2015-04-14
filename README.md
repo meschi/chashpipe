@@ -32,7 +32,7 @@ Supported hash functions:
 
 You can specify the hash function with the `-f` flag.
 
-##### Help
+### Help
 ```sh
 % hashpipe -h
 usage: hashpipe [-h] [-f hashfunction] [hash]
