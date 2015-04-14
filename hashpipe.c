@@ -3,6 +3,7 @@
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
 #include <openssl/whrlpool.h>
+#include <openssl/md5.h>
 
 #include <err.h>
 #include <stdio.h>
@@ -13,7 +14,7 @@
 #define HASH_SHA1	1
 #define HASH_SHA256	2
 #define HASH_SHA512	3
-#define HASH_MD5	4
+//#define HASH_MD5	4
 #define HASH_RIPEMD160	5
 #define HASH_WHIRLPOOL	6
 
@@ -48,15 +49,36 @@ main(int argc, char **argv)
 	while ((ch = getopt(argc, argv, "f:h")) != -1) {
 		switch (ch) {
 		case 'f':
-			if (!strcmp(optarg, "sha1"))
+			if (!strcmp(optarg, "sha1")) {
 				fflag = HASH_SHA1;
-			else if (!strcmp(optarg, "sha256"))
+				fname = "sha1";
+
+			} else if (!strcmp(optarg, "sha256")) {
 				fflag = HASH_SHA256;
-			else if (!strcmp(optarg, "sha512"))
+				fname = "sha256";
+
+			} else if (!strcmp(optarg, "sha512")) {
 				fflag = HASH_SHA512;
-			else {
+				fname = "sha512";
+
+			} else if (!strcmp(optarg, "whirlpool")) {
+				fflag = HASH_WHIRLPOOL;
+				fname = "whirlpool";
+
+/*
+#ifdef USE_MD5
+			} else if (!strcmp(optarg, "md5")) {
+				fflag = HASH_MD5;
+				fname = "md5";
+#endif			
+*/
+			} else if (!strcmp(optarg, "ripemd")) {
+				fflag = HASH_RIPEMD160;
+				fname = "ripemd";
+
+			} else {
 				errx(1, "Hash function \"%s\" unknown... Aborting!", optarg);
-				exit(1);
+//TODO Remove?				exit(1);
 				/* NOTREACHED */
 			}
 			break;
@@ -138,11 +160,15 @@ digest_size()
 	case HASH_SHA256:
 		return SHA256_DIGEST_LENGTH;
 	case HASH_SHA512:
-		return SHA512_DIGEST_LENGTH;;
+		return SHA512_DIGEST_LENGTH;
 	case HASH_RIPEMD160:
 		return RIPEMD160_DIGEST_LENGTH;
 	case HASH_WHIRLPOOL:
 		return WHIRLPOOL_DIGEST_LENGTH;
+/*
+	case HASH_MD5:
+		return MD5_DIGEST_LENGTH;
+*/
 	}
 }
 
@@ -185,6 +211,14 @@ check_hash(char *buf, int size, char *chkhash)
 		break;
 	case HASH_WHIRLPOOL:
 		WHIRLPOOL(buf, size, digest);
+		break;
+/*
+	case MD5:
+		MD5(buf, size, digest);
+		break;
+*/
+	default: //TODO check and remove
+		errx(1,"Bug in hashing");
 	}
 
 	/* create hexadecimal ascii encoding */
@@ -204,7 +238,8 @@ help(void)
 	usage(0);
 	fprintf(stderr,
 	    "Command Summary:\n\
-	    \t-f        Hash algorithm (sha1, sha256, sha512, md5)\n\
+	    \t-f        Hash algorithm (sha1, sha256, sha512, (md5,) \
+	    whirlpool, ripemd)\n\
 	    \t-h        Print this help\n\
 	    ");
 	exit(1);
